@@ -3,6 +3,10 @@
         {
             "outputFile": "/Users/julong/Documents/androidFile/OpenCV/OpenCVDome/openCVLibrary340/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
             "map": []
+        },
+        {
+            "outputFile": "/Users/julong/Documents/androidFile/OpenCV/OpenCVGraph/openCVLibrary340/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
+            "map": []
         }
     ]
 }
