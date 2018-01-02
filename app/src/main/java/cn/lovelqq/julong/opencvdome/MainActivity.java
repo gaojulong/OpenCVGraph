@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG="MainActivity";
     private Button bton;
     private ImageView imageView;
+    private TextView tv_content;
     static {
         if(!OpenCVLoader.initDebug()){
             Log.d(TAG,"OpenCV not loaded");
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void init(){
         bton=findViewById(R.id.bton);
         imageView=findViewById(R.id.imageView);
+        tv_content=findViewById(R.id.tv_Content);
 
         bton.setOnClickListener(this);
     }
@@ -50,10 +53,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.bton:
-                convert2Gray();
+                //convert2Gray();
+                OpenCOLOR open=new OpenCOLOR();
+                Bitmap bitmap= BitmapFactory.decodeResource(this.getResources(),R.drawable.i16);
+                open.main(bitmap);
+
                 break;
         }
     }
+
+    /**
+     * 灰度 处理
+     */
     private void convert2Gray(){
         Bitmap bitmap= BitmapFactory.decodeResource(this.getResources(),R.drawable.i464);
         Mat src=new Mat();
