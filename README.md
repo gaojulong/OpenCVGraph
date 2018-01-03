@@ -1,6 +1,6 @@
 # OpenCV for Android 
 
-说明：项目没有功能，只基本搭建环境。
+说明
 
 ### 环境
 	安卓环境：	android stud 3.1  
