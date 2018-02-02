@@ -18,7 +18,7 @@ import org.opencv.imgproc.Imgproc;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG="MainActivity";
-    private Button bton;
+    private Button bt_r,bt_b,bt_y;
     private ImageView imageView;
     private TextView tv_content;
     static {
@@ -42,37 +42,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 加载控件初始化
      */
     private void init(){
-        bton=findViewById(R.id.bton);
+        bt_r=findViewById(R.id.bt_r);
+        bt_b=findViewById(R.id.bt_b);
+        bt_y=findViewById(R.id.bt_y);
         imageView=findViewById(R.id.imageView);
         tv_content=findViewById(R.id.tv_Content);
 
-        bton.setOnClickListener(this);
+        bt_r.setOnClickListener(this);
+        bt_b.setOnClickListener(this);
+        bt_y.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
+        OpenCOLOR open=new OpenCOLOR();
+        Bitmap bitmap= BitmapFactory.decodeResource(this.getResources(),R.drawable.i16);
+        Bitmap bitmapsrc=bitmap;
         switch (view.getId()){
-            case R.id.bton:
-                //convert2Gray();
-                OpenCOLOR open=new OpenCOLOR();
-                Bitmap bitmap= BitmapFactory.decodeResource(this.getResources(),R.drawable.i16);
-                open.main(bitmap);
-
+            case R.id.bt_r:
+                Mat srcr= open.main(bitmap,"r");
+                Utils.matToBitmap(srcr,bitmapsrc);
+                imageView.setImageBitmap(bitmapsrc);
+                tv_content.setText(OpenCOLOR.jieGuo);
+                break;
+            case R.id.bt_b:
+                Mat srcb=  open.main(bitmap,"b");
+                Utils.matToBitmap(srcb,bitmapsrc);
+                imageView.setImageBitmap(bitmapsrc);
+                tv_content.setText(OpenCOLOR.jieGuo);
+                break;
+            case R.id.bt_y:
+               Mat srcy= open.main(bitmap,"y");
+                Utils.matToBitmap(srcy,bitmapsrc);
+                imageView.setImageBitmap(bitmapsrc);
+                tv_content.setText(OpenCOLOR.jieGuo);
                 break;
         }
     }
-
-    /**
-     * 灰度 处理
-     */
-    private void convert2Gray(){
-        Bitmap bitmap= BitmapFactory.decodeResource(this.getResources(),R.drawable.i464);
-        Mat src=new Mat();
-        Mat gray=new Mat();
-        Utils.bitmapToMat(bitmap,src);
-        Imgproc.cvtColor(src,gray,Imgproc.COLOR_BGRA2GRAY);
-        Utils.matToBitmap(gray,bitmap);
-        imageView.setImageBitmap(bitmap);
-    }
-
 }

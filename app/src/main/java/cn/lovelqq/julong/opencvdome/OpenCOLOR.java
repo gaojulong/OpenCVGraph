@@ -25,35 +25,48 @@ import org.opencv.imgproc.Moments;
  *
  */
 public class OpenCOLOR  {
-
 	/**
 	 * 传进来图片bitmap
 	 * 分析图形形状
 	 */
-	public StringBuffer stringBuffer=new StringBuffer();
-	public void main(Bitmap bitmap) {
+	public static String jieGuo="无返回结果";
+	public Mat main(Bitmap bitmap,String scol) {
 		// TODO Auto-generated method stub
 		FileService file=new FileService();
-		new OpenCOLOR().ShowText();//打印版本信息
 		//将bitmap转换成Mat
 		Mat srcMat=new Mat();
 		Utils.bitmapToMat(bitmap,srcMat);
 		//复制一份Mat
 		Mat dstMat = srcMat.clone();
+		if("r".equals(scol)){
+			Mat Rdst = new OpenCOLOR().findColor(srcMat, 0, 24);//红 原范围值 0~20 由于图片色彩达不到标准修改 0~24
+			Mat RdstImage = new OpenCOLOR().Graphicdetection(srcMat, Rdst, dstMat, "R");
+			Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"R.png", RdstImage);
+			Utils.matToBitmap(Rdst,bitmap);
+			file.savePhoto(bitmap,"Rfile.png");
+			return RdstImage;
+		}
+		if("b".equals(scol)){
+			Mat Gdst = new OpenCOLOR().findColor(srcMat, 60, 80);//绿 原范围值 60~80
+			Utils.matToBitmap(Gdst,bitmap);
+			file.savePhoto(bitmap,"颜色识处理后G.png");
 
-		Mat Rdst = new OpenCOLOR().findColor(srcMat, 0, 24);//红 原范围值 0~20 由于图片色彩达不到标准修改 0~24
-		Mat Gdst = new OpenCOLOR().findColor(srcMat, 60, 80);//绿 原范围值 60~80
-		Mat Ydst = new OpenCOLOR().findColor(srcMat, 30, 50);//黄  原范围值 23~38 由于图片色彩达不到标准修改 28~50
+			Mat GdstImage = new OpenCOLOR().Graphicdetection(srcMat, Gdst, dstMat, "G");
+			Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"G.png", GdstImage);
+			Utils.matToBitmap(GdstImage,bitmap);
+			file.savePhoto(bitmap,"最终的图片G.png");
+			return GdstImage;
+		}
+		if("y".equals(scol)){
 
-		Mat RdstImage = new OpenCOLOR().Graphicdetection(srcMat, Rdst, dstMat, "R");
-		Mat GdstImage = new OpenCOLOR().Graphicdetection(srcMat, Gdst, dstMat, "G");
-		Mat YdstImage = new OpenCOLOR().Graphicdetection(srcMat, Ydst, dstMat, "Y");
-		
-
-//		// 储存图像路径自行修改
-		Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"R.png", RdstImage);
-		Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"G.png", GdstImage);
-		Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"Y.png", YdstImage);
+			Mat Ydst = new OpenCOLOR().findColor(srcMat, 30, 50);//黄  原范围值 23~38 由于图片色彩达不到标准修改 28~50
+			Mat YdstImage = new OpenCOLOR().Graphicdetection(srcMat, Ydst, dstMat, "Y");
+			Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"Y.png", YdstImage);
+			Utils.matToBitmap(Ydst,bitmap);
+			file.savePhoto(bitmap,"Yfile.png");
+			return YdstImage;
+		}
+		return srcMat;
 	}
 
 	/**
@@ -173,7 +186,7 @@ public class OpenCOLOR  {
 		//高斯滤波
 		Imgproc.GaussianBlur(CLImage, CLImage, new Size(9,9), 0,0);
 		//霍夫圆检测
-		Imgproc.HoughCircles(CLImage, circles, Imgproc.CV_HOUGH_GRADIENT, 1.5, 10, 200, 100, 0, 0);
+		Imgproc.HoughCircles(CLImage, circles, Imgproc.CV_HOUGH_GRADIENT, 1.5, 50, 200, 100, 0, 0);
 		for (int i = 0; i < circles.cols(); i++)
 		{
 			double vCircle[] = circles.get(0, i);
@@ -187,33 +200,17 @@ public class OpenCOLOR  {
 		}
 		if (str == "R") {
 			str = "红色";
-			System.out.printf("%s 正方形 有 %d 个\n",str, zfcount);
-			System.out.printf("%s 三角形 有 %d 个\n",str, sjcount);
-			System.out.printf("%s 圆     有 %d 个\n\n",str, circles.cols());
-			stringBuffer.append(str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
+			jieGuo=str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
+			Log.e("红色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
 		} else if(str == "G") {
 			str = "绿色";
-			System.out.printf("%s 正方形 有 %d 个\n",str, zfcount);
-			System.out.printf("%s 三角形 有 %d 个\n",str, sjcount);
-			System.out.printf("%s 圆     有 %d 个\n\n",str, circles.cols());
-			stringBuffer.append(str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
+			jieGuo=str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
+			Log.e("绿色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
 		}else {
 			str = "黄色";
-			System.out.printf("%s 正方形 有 %d 个\n",str, zfcount);
-			System.out.printf("%s 三角形 有 %d 个\n",str, sjcount);
-			System.out.printf("%s 圆     有 %d 个\n\n",str, circles.cols());
-			stringBuffer.append(str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
+			jieGuo=str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
+			Log.e("黄色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
 		}
-		Log.e("Str",stringBuffer.toString());
 		return bjImage;
-	}
-	/**
-	 * 描述：输出一些帮助信息
-	 */
-	void ShowText()
-	{
-		//输出欢迎信息和OpenCV版本
-		System.out.printf("\n\n\t\t\t项目说明：测试版本1.0.0！\n");
-		System.out.printf("\n\n  ----------------------------------------------------------------------------\n\n");
 	}
 }
