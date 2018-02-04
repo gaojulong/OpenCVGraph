@@ -1,7 +1,9 @@
 package cn.lovelqq.julong.opencvdome;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +32,27 @@ public class OpenCOLOR  {
 	 * 分析图形形状
 	 */
 	public static String jieGuo="无返回结果";
+	FileService file=new FileService();
 	public Mat main(Bitmap bitmap,String scol) {
 		// TODO Auto-generated method stub
-		FileService file=new FileService();
 		//将bitmap转换成Mat
 		Mat srcMat=new Mat();
 		Utils.bitmapToMat(bitmap,srcMat);
 		//复制一份Mat
 		Mat dstMat = srcMat.clone();
 		if("r".equals(scol)){
-			Mat Rdst = new OpenCOLOR().findColor(srcMat, 0, 24);//红 原范围值 0~20 由于图片色彩达不到标准修改 0~24
+//			Mat Rdst = new OpenCOLOR().findColor(srcMat, 0, 24);//红 原范围值 0~20 由于图片色彩达不到标准修改 0~24
+//			Utils.matToBitmap(Rdst,bitmap);
+//			file.savePhoto(bitmap,"颜色识处理后R.png");
+			bitmap=bitmapNegation(bitmap,0,255,0,1,0,1);
+			file.savePhoto(bitmap,"颜色识处理后R.png");
+			Mat Rdst=new Mat();
+			Utils.bitmapToMat(bitmap,Rdst);
+
 			Mat RdstImage = new OpenCOLOR().Graphicdetection(srcMat, Rdst, dstMat, "R");
 			Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"R.png", RdstImage);
-			Utils.matToBitmap(Rdst,bitmap);
-			file.savePhoto(bitmap,"Rfile.png");
+			Utils.matToBitmap(RdstImage,bitmap);
+			file.savePhoto(bitmap,"最终的图片R.png");
 			return RdstImage;
 		}
 		if("b".equals(scol)){
@@ -58,12 +67,14 @@ public class OpenCOLOR  {
 			return GdstImage;
 		}
 		if("y".equals(scol)){
-
 			Mat Ydst = new OpenCOLOR().findColor(srcMat, 30, 50);//黄  原范围值 23~38 由于图片色彩达不到标准修改 28~50
+			Utils.matToBitmap(Ydst,bitmap);
+			file.savePhoto(bitmap,"颜色识处理后Y.png");
+
 			Mat YdstImage = new OpenCOLOR().Graphicdetection(srcMat, Ydst, dstMat, "Y");
 			Imgcodecs.imwrite(Environment.getExternalStorageDirectory() + "/print/"+"Y.png", YdstImage);
-			Utils.matToBitmap(Ydst,bitmap);
-			file.savePhoto(bitmap,"Yfile.png");
+			Utils.matToBitmap(YdstImage,bitmap);
+			file.savePhoto(bitmap,"最终的图片Y.png");
 			return YdstImage;
 		}
 		return srcMat;
@@ -200,17 +211,58 @@ public class OpenCOLOR  {
 		}
 		if (str == "R") {
 			str = "红色";
-			jieGuo=str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
-			Log.e("红色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
+			jieGuo=str+"\n正方形"+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
+			Log.e("红色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆  形"+circles.cols()+"\n");
 		} else if(str == "G") {
 			str = "绿色";
-			jieGuo=str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
-			Log.e("绿色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
+			jieGuo=str+"\n正方形"+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
+			Log.e("绿色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆  形"+circles.cols()+"\n");
 		}else {
 			str = "黄色";
-			jieGuo=str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
-			Log.e("黄色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n");
+			jieGuo=str+"\n正方形"+zfcount+"\n三角形"+sjcount+"\n圆形"+circles.cols()+"\n";
+			Log.e("黄色输出",str+"正方形 有 "+zfcount+"\n三角形"+sjcount+"\n圆  形"+circles.cols()+"\n");
 		}
 		return bjImage;
+	}
+	/**
+	 * 对bitmap二值化
+	 * @param bitmap
+	 * @return
+	 */
+	public  Bitmap bitmapNegation(Bitmap bitmap,int Rmin,int Rmax,int Gmin,int Gmax,int Bmin,int Bmax){
+		int width=bitmap.getWidth();
+		int height=bitmap.getHeight();
+		int[] pixels=new int[width*height];
+		bitmap.getPixels(pixels,0,width,0,0,width,height);
+		int indx=0;
+		int a=0,r=0,g=0,b=0;
+		for(int row=0;row<height;row++){
+			indx=row*width;
+			for (int col=0;col<width;col++){
+				int pixel=pixels[indx];
+				a=(pixel>>24)&0xff;
+				r=(pixel>>16)&0xff;
+				g=(pixel>>8)&0xff;
+				b=pixel&0xff;
+				//像素二值化
+				if(((r<=Rmax)&&(r>=Rmin))&((g<=Gmax)&&(g>=Gmin))&&((b<=Bmax)&&(b>=Bmin))){
+					r=255;
+					g=255;
+					b=255;
+				}
+				else {
+					r=0;
+					g=0;
+					b=0;
+				}
+				//重新赋给像素
+				pixel=((a&0xff)<<24)|((r&0xff)<<16)|((g&0xff)<<8)|(b&0xff);
+				pixels[indx]=pixel;
+				indx++;
+			}
+		}
+		bitmap=Bitmap.createBitmap(width,height, Bitmap.Config.ARGB_8888);
+		bitmap.setPixels(pixels,0,width,0,0,width,height);
+		return bitmap;
 	}
 }
