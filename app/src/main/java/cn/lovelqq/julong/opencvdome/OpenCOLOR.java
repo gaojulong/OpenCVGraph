@@ -196,6 +196,8 @@ public class OpenCOLOR  {
 		Mat circles = new Mat();
 		//高斯滤波
 		Imgproc.GaussianBlur(CLImage, CLImage, new Size(9,9), 0,0);
+//		//二值化
+//		Imgproc.cvtColor(CLImage,CLImage,Imgproc.COLOR_BGRA2GRAY);
 		//霍夫圆检测
 		Imgproc.HoughCircles(CLImage, circles, Imgproc.CV_HOUGH_GRADIENT, 1.5, 50, 200, 100, 0, 0);
 		for (int i = 0; i < circles.cols(); i++)
