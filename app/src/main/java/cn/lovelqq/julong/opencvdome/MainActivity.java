@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_r.setOnClickListener(this);
         bt_b.setOnClickListener(this);
         bt_y.setOnClickListener(this);
+
     }
 
     @Override
